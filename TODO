@@ -1,0 +1,7 @@
+- make inventory file
+- pin requirement versions
+- for homebrew install lists, make variable, then loop through because easier to maintain, also to make it a role
+- use ansible.package if it supports homebrew or pacman or yay
+
+
+* roles use what collections export

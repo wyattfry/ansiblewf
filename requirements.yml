@@ -1,0 +1,8 @@
+collections:
+  - name: community.general
+  - name: kewlfft.aur
+roles:
+  - name: elliotweiser.osx-command-line-tools
+  - name: jgkim.brew
+  - name: dotstrap.node
+  - name: samdoran.fish

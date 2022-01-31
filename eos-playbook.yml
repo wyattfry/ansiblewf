@@ -1,0 +1,77 @@
+# TODO
+# - git config --global push.default current
+# - allow running tfenv without sudo
+# - azsub, get-all-k8s-ctx
+# - vim config
+# - shell config (fish? zsh/ohmyzsh/pl10k?)
+---
+- name: All EndeavourOS (arch) hosts up-to-date
+  become: yes
+  hosts: targets
+  roles:
+    - dotstrap.node # node.js nvm
+  tasks:
+    - name: full system upgrade
+      pacman:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Set environment variable
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        regexp: '^EDITOR='
+        line: EDITOR=vimir
+
+    - name: Set environment variable
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        regexp: '^VISUAL='
+        line: VISUAL=vim
+
+### Packages ###
+
+    - name: Install packages
+      community.general.pacman:
+        name:
+          - discord
+          - docker
+          - docker-compose
+          - git
+          - jq
+          - kubectx
+          - perl-anyevent-i3
+          - pulsemixer
+          - tmux
+          - vim
+        state: present
+
+    - name: Create the `aur_builder` user
+      become: yes
+      ansible.builtin.user:
+        name: aur_builder
+        system: yes
+        group: wheel
+
+    - name: Allow the `aur_builder` user to run `sudo pacman` without a password
+      become: yes
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/11-install-aur_builder
+        line: 'aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman'
+        create: yes
+        validate: 'visudo -cf %s'
+          
+    - name: Install AUR packages
+      kewlfft.aur.aur:
+        name:
+          - azure-cli
+          - jetbrains-toolbox
+          - openvpn3
+          - pycharm-professional
+          - slack-desktop
+          - tfenv
+          - visual-studio-code-bin
+          - zoom
+        use: makepkg
+        state: present
+      become: yes
+      become_user: aur_builder

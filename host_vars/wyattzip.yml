@@ -1,0 +1,21 @@
+username: wyattfry
+casks:
+  - discord
+  - docker
+  - jetbrains-toolbox
+  - slack
+  - visual-studio-code
+  - zoom
+
+formulae:
+  - azure-cli
+  - git
+  - helm
+  - jq
+  - kubectx
+  - openvpn
+  - tfenv
+  - tmux
+  - vim
+  - watch
+

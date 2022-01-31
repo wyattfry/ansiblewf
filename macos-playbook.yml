@@ -1,0 +1,73 @@
+# TODO
+# - git config --global push.default current
+# - allow running tfenv without sudo
+---
+- name: All macOS hosts up-to-date
+  hosts: localhost 
+  vars:
+    username: wyattfry
+    brew_upgrade_all: True 
+    cask_packages:
+      - discord
+      - jetbrains-toolbox
+      - rancher
+      - slack
+      - visual-studio-code
+    
+    brew_packages:
+      - azure-cli
+      - bash
+      - fish
+      - git
+      - helm
+      - jq
+      - kubectx
+      - openvpn
+      - tfenv
+      - tmux
+      - vim
+      - watch
+      - wget
+
+  roles:
+    - elliotweiser.osx-command-line-tools
+    - jgkim.brew
+    - dotstrap.node
+  tasks:
+  
+    - name: Set vars in env var file
+      ansible.builtin.lineinfile:
+        create: yes
+        path: "/Users/{{ username }}/.config/fish/config.fish"
+        regexp: "^set -gx {{ item.key  }} "
+        line: "set -gx {{  item.key }} {{ item.value }}"
+      loop: "{{ env_vars | dict2items }}"
+      vars:
+        env_vars:
+          EDITOR: 'vim'
+          VISUAL: 'vim'
+
+    - name: Ensure homebrew in path
+      ansible.builtin.lineinfile:
+        create: yes
+        path: "/Users/{{ username }}/.config/fish/config.fish"
+        line: "{{ item }}"
+      loop:
+        - "fish_add_path /opt/homebrew/sbin"
+        - "fish_add_path /opt/homebrew/bin"
+        - "fish_add_path $HOME/Library/Python/3.8/bin"
+        - "fish_add_path $HOME/support-scripts/lib"
+        - "alias vpn='sudo openvpn ~/.ovpn/profile.ovpn'"
+      tags:
+        - env
+
+## To make netskope work with az-cli ##
+#         REQUESTS_CA_BUNDLE: '/Library/Application\ Support/Netskope/STAgent/data/nscacert.pem'
+
+    - name: Set shell (fish)
+      become: yes
+      ansible.builtin.user:
+        name: "{{ username }}"
+        shell: '/opt/homebrew/bin/fish'
+
+
